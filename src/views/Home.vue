@@ -3,7 +3,7 @@
    <HeaderOnlineStore/>
     <Hero/>
     <Produk/>
-    <Insta/>
+    <!-- <Insta/> -->
     <Partner/>
     <FooterOnlineStore/>
   </div>
@@ -14,7 +14,7 @@
 import HeaderOnlineStore from '@/components/HeaderOnlineStore.vue';
 import Hero from '@/components/Hero.vue';
 import Produk from '@/components/Produk.vue';
-import Insta from '@/components/Insta.vue';
+// import Insta from '@/components/Insta.vue';
 import Partner from '@/components/Partner.vue';
 import FooterOnlineStore from '@/components/FooterOnlineStore.vue';
 
@@ -25,7 +25,7 @@ export default {
     HeaderOnlineStore,
     Hero,
     Produk,
-    Insta,
+    // Insta,
     Partner,
     FooterOnlineStore,
   }

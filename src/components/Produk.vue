@@ -3,100 +3,42 @@
     <section class="women-banner spad">
         <div class="container-fluid">
             <div class="row">
-                <div class="col-lg-12 mt-5">
+                <div class="col-lg-12 mt-5" v-if="products.length > 0" >
                     <carousel class="product-slider " :items="3" :nav="false" :autoplay="true" :dots="false" >
-                        <div class="product-item">
+                        
+                        <div class="product-item" v-for="itemProduct in products" v-bind:key="itemProduct.id">
                             <div class="pi-pic">
-                                <img src="img/products/NCT_127_Sticker_Dad_Hat_Box_V3.png" alt="" />
+                                <img v-bind:src="itemProduct.galleries[0].photo" alt="" />
                                 <ul>
-                                    <li class="w-icon active">
-                                        <a href="#"><i class="icon_bag_alt"></i></a>
+                                    <li @click="saveKeranjang(itemProduct.id, itemProduct.name, itemProduct.price, itemProduct.galleries[0].photo)" class="w-icon active">
+                                        <a
+                                        href="#">
+                                        <i class="icon_bag_alt"></i>
+                                        </a>
                                     </li>
                                     <li class="quick-view">
-                                        <router-link to="/detailproduk">+ Quick View</router-link>
-                                        </li>
-                                    <li class="w-icon">
-                                        <a href="#"><i class="fa fa-random"></i></a>
+                                        <router-link v-bind:to="'/detailproduk/'+itemProduct.id">+ Quick View</router-link>
                                     </li>
                                 </ul>
                             </div>
                             <div class="pi-text">
-                                <div class="catagory-name">Album</div>
+                                <div class="catagory-name">{{itemProduct.type}}</div>
                                 <a href="#">
-                                    <h5>NCT 127 'STICKER' DAD HAT DELUXE BOX</h5>
+                                    <h5>{{itemProduct.name}}</h5>
                                 </a>
                                 <div class="product-price">
-                                    $34.00
+                                   ${{itemProduct.price}}
                                 </div>
                             </div>
                         </div>
-                        <div class="product-item">
-                            <div class="pi-pic">
-                                <img src="img/products/NEWCD2_700x.png" alt="" />
-                                <ul>
-                                    <li class="w-icon active">
-                                        <a href="#"><i class="icon_bag_alt"></i></a>
-                                    </li>
-                                    <li class="quick-view">
-                                        <router-link to="/detailproduk">+ Quick View</router-link>
-                                    </li>
-                                </ul>
-                            </div>
-                            <div class="pi-text">
-                                <div class="catagory-name">Album</div>
-                                <a href="#">
-                                    <h5>NCT 127 THE 3RD ALBUM 'STICKER' CD (STICKY VER.)</h5>
-                                </a>
-                                <div class="product-price">
-                                    $13.00
-                                </div>
-                            </div>
-                        </div>
-                        <div class="product-item">
-                            <div class="pi-pic">
-                                <img src="img/products/NEWCD_700x.png" alt="" />
-                                <ul>
-                                    <li class="w-icon active">
-                                        <a href="#"><i class="icon_bag_alt"></i></a>
-                                    </li>
-                                    <li class="quick-view"><a href="#">+ Quick View</a></li>
-                                </ul>
-                            </div>
-                            <div class="pi-text">
-                                <div class="catagory-name">Jewel case</div>
-                                <a href="#">
-                                    <h5>NCT 127 THE 3RD ALBUM 'STICKER' CD (JEWEL CASE GENERAL VER.)</h5>
-                                </a>
-                                <div class="product-price">
-                                    $34.00
-                                </div>
-                            </div>
-                        </div>
-                        <div class="product-item">
-                            <div class="pi-pic">
-                                <img src="img/products/NCT_127_Sticker_T_Shirt_Box-V3_700x.png" alt="" />
-                                <ul>
-                                    <li class="w-icon active">
-                                        <a href="#"><i class="icon_bag_alt"></i></a>
-                                    </li>
-                                    <li class="quick-view"><a href="#">+ Quick View</a></li>
-                                    <li class="w-icon">
-                                        <a href="#"><i class="fa fa-random"></i></a>
-                                    </li>
-                                </ul>
-                            </div>
-                            <div class="pi-text">
-                                <div class="catagory-name">Albem set</div>
-                                <a href="#">
-                                    <h5>NCT 127 'STICKER' SHORT SLEEVE T-SHIRTS DELUXE BOX</h5>
-                                </a>
-                                <div class="product-price">
-                                    $34.00
-                                </div>
-                            </div>
-                        </div>
+                       
                     </carousel>
                 </div>
+               <div class="col-lg-12" v-else>
+                   <p>
+                       Produk baru belum tersedia
+                   </p>
+               </div>
             </div>
         </div>
     </section>
@@ -105,12 +47,49 @@
 
 <script>
 import carousel from 'vue-owl-carousel';
+import axios from 'axios';
+
 export default {
     name:'Produk',
     components: {
     carousel,
+  },
+  data(){
+      return{
+          products:[],
+          keranjangUser: []
+      };
+  },
+  methods:{
+        saveKeranjang(idProduct, nameProduct,priceProduct, photoProduct ) {
+        var productStored = {
+        "id": idProduct,
+        "name": nameProduct,
+        "price": priceProduct,
+        "photo": photoProduct
+            };
+      this.keranjangUser.push(productStored);
+      const parsed = JSON.stringify(this.keranjangUser);
+      localStorage.setItem('keranjangUser', parsed);
+
+      window.location.reload();
+    }
+  },
+  mounted(){
+      axios
+      .get("http://127.0.0.1:8001/api/products")
+      .then(res => (this.products = res.data.data.data))
+      .catch(err => console.log(err));
+      
+             if (localStorage.getItem('keranjangUser')) {
+                try {
+                    this.keranjangUser = JSON.parse(localStorage.getItem('keranjangUser'));
+                } catch(e) {
+                    localStorage.removeItem('keranjangUser');
+                }
+            }
   }
-}
+};
 </script>
 
 <style scoped>
